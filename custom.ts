@@ -84,10 +84,35 @@ namespace LCD1602 {
 
     }
 
-    //%block
+    /**
+     * Стереть экран
+     */
+    //%block="очистить ЖК-дисплей"
     export function clear() {
         send(LCD_CLEARDISPLAY, 0)
         basic.pause(2)
+    }
+
+    //%block="вернуть курсор домой"
+    export function home() {
+        send(LCD_RETURNHOME, 0)
+        basic.pause(2)
+    }
+
+    //%block="установить курсор на столбце %col и строке %row"
+    export function setCursor(col: number, row: number) {
+        let orpart = col
+        if (row > 0)
+            orpart = orpart + 0x40
+        send(LCD_SETDDRAMADDR | orpart, 0)
+    }
+
+    //%block="показать текст %t начиная с текущего положения курсора"
+    //% t.defl="Жизнь прекрасна!"
+    export function showText(t: string) {
+        for (let i = 0; i < t.length; i++) {
+            send(t.charCodeAt(i), 1);
+        }
     }
 
     /**
@@ -96,7 +121,7 @@ namespace LCD1602 {
      * к которым подключен дисплей,
      * и задать рабочий режим
      */
-    //% block="initialize display with:|rs->%rs|en->%en|d4->%d4|d5->%d5|d6->%d6|d7->%d7"
+    //% block="запустить ЖК-дисплей|со следующим подключеним контактов:|rs->%rs|en->%en|d4->%d4|d5->%d5|d6->%d6|d7->%d7"
     //% rs.defl=DigitalPin.P0 en.defl=DigitalPin.P1 d4.defl=DigitalPin.P8 d5.defl=DigitalPin.P12 d6.defl=DigitalPin.P2 d7.defl=DigitalPin.P13
     export function InitializeDisplay(rs: DigitalPin, en: DigitalPin, 
      d4: DigitalPin, d5: DigitalPin, d6: DigitalPin, d7: DigitalPin) {
